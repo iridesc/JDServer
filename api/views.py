@@ -19,8 +19,14 @@ def distributor(request):
         return_data=UpdateBeanData(data)
     elif Reason == 'AddBeanData':
         return_data=AddBeanData(data)
+    elif Reason == 'Operator':
+        return_data=Operator(data)
+        
     else:
-        return_data={}
+        return_data={
+            'Status':False,
+            'Reason':'Unknow optation'
+            }
 
     return JsonResponse(return_data)
 
@@ -30,13 +36,16 @@ def GetTryData(data):
     #     'Reason':'GetTryData',
     #     'Days':1,
     # }
-    if TryActivity.objects.order_by('-UpdateTime')[0].UpadateTime<time.time()-12*60*60:
+    if TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime<time.time()-12*60*60:
         return_data={
             'Status':False,
             'Because':'TryDataTimeout'
         }
     else:
-        activity_list=TryActivity.objects.filter(EndTime_gt=time.time()).filter(EndTime_lt=time.time()+data['Days']*24*60*60)
+        activity_list=list(
+            TryActivity.objects.filter(EndTime__gt=time.time())\
+            .filter(EndTime__lt=time.time()+data['Days']*24*60*60).values()
+        )
         return_data={
             'Status':True,
             'ActivityList':activity_list
@@ -51,9 +60,9 @@ def GetBeanData(data):
     # }
 
     if data['Days'] == None:
-        shop_list=Shop.objects.order_by('?')[0:50].valus()
+        shop_list=list(Shop.objects.order_by('?')[0:50].values())
     else:
-        shop_list=Shop.objects.filter(LastGotTime_gt=data['Days']*24*60*60)
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=data['Days']*24*60*60).values())
     
     return_data={
         'Status':True,
@@ -64,13 +73,21 @@ def GetBeanData(data):
     return return_data
 
 def UpdateTryData(data):
+    TryActivity.objects.all().delete()
+
     # data={
     #     'Reason':'UpdateTryData',
     #     'TryActivityList':[]
     # }
 
 
-    try_activity_list=data['TryActivityList']
+    try_activity_list=[]
+    for_unique=[]
+    for activity in data['TryActivityList']:
+        if activity['ActivityId'] not in for_unique:
+            for_unique.append(activity['ActivityId'])
+            try_activity_list.append(activity)
+
     ready_for_save_list=[]
     shop_list=[]
     for try_activity in try_activity_list:
@@ -115,15 +132,16 @@ def UpdateTryData(data):
                         )
                     )
                     
-                
+                # print('add')
             else:
-                print('activity exist')
+                # print('activity exist')
                 pass
         else:
-            print('activity timeout')
+            #print('activity timeout')
             pass
 
     TryActivity.objects.bulk_create(ready_for_save_list)
+
     bean_return=AddBeanData({
             'Reason':'AddBeanData',
             'ShopList':shop_list
@@ -133,7 +151,7 @@ def UpdateTryData(data):
         'Status':True,
         'SavedAmount':len(ready_for_save_list),
         'SavedRate':len(ready_for_save_list)/len(try_activity_list),
-        'AbountBean':bean_return,
+        'AboutBean':bean_return,
     }
 
     return return_data
@@ -158,7 +176,8 @@ def AddBeanData(data):
                     )
                 )
             else:
-                print('shop exits')
+                #print('shop exits')
+                pass
     
     Shop.objects.bulk_create(ready_for_save_list)
 
@@ -171,7 +190,50 @@ def AddBeanData(data):
     }
     return return_data
 
-
 def UpdateBeanData(data):
-        pass
-        return {}
+    # data={
+    #     'Reason':'UpdateBeanData',
+    #     'ShopList':[]
+    # }
+    shop_list=data['ShopList']
+    
+    n=0
+    error_list=[]
+    for shop in shop_list:
+        if shop['ShopId']!='':
+            try:
+                s=Shop.objects.get(ShopId=shop['ShopId'])
+                if s.LastGotTime < shop['LastGotTime']:
+                    s.LastGotTime=shop['LastGotTime']
+                    s.save()
+                    n+=1
+            except Exception as e:
+                # print(str(e))
+                error_list.append(str(e))  
+        else:
+            error_list.append('ShopId is Blank')  
+    return_data={
+        'Status':True,
+        'UpdatedAmount':n,
+        'UpdatedRate':n/len(shop_list),
+        'ErrorList':error_list,
+    }
+    return return_data
+
+def Operator(data):
+    # data={
+    #     'Reason':'Operator'
+    #     'Password':''
+    # }
+    if data['Password']=='Irid#1231':
+        TryActivity.objects.all().delete()
+        Shop.objects.all().delete()
+        return_data={
+            'Status':True,
+        }
+    else:
+        return_data={
+            'Status':False,
+            'Reason':'Promission Denied！'
+        }
+    return return_data
