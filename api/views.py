@@ -30,7 +30,8 @@ def distributor(request):
                 'Status':False,
                 'Reason':'Unknow optation'
                 }
-    except:
+    except Exception as e:
+        print(str(e))
         return_data={
             'Status':False,
             'Reason':'what you want?'
