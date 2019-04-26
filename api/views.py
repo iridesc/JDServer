@@ -6,26 +6,32 @@ from api.models import TryActivity,Shop
 # Create your views here.
 
 def distributor(request):
-    data=json.loads(request.body)
-    Reason=data['Reason']
+    try:
+        data=json.loads(request.body)
+        Reason=data['Reason']
 
-    if Reason == 'GetTryData':
-        return_data=GetTryData(data)
-    elif Reason == 'GetBeanData':
-        return_data=GetBeanData(data)
-    elif Reason == 'UpdateTryData':
-        return_data=UpdateTryData(data)
-    elif Reason == 'UpdateBeanData':
-        return_data=UpdateBeanData(data)
-    elif Reason == 'AddBeanData':
-        return_data=AddBeanData(data)
-    elif Reason == 'Operator':
-        return_data=Operator(data)
-        
-    else:
+        if Reason == 'GetTryData':
+            return_data=GetTryData(data)
+        elif Reason == 'GetBeanData':
+            return_data=GetBeanData(data)
+        elif Reason == 'UpdateTryData':
+            return_data=UpdateTryData(data)
+        elif Reason == 'UpdateBeanData':
+            return_data=UpdateBeanData(data)
+        elif Reason == 'AddBeanData':
+            return_data=AddBeanData(data)
+        elif Reason == 'Operator':
+            return_data=Operator(data)
+            
+        else:
+            return_data={
+                'Status':False,
+                'Reason':'Unknow optation'
+                }
+    except:
         return_data={
             'Status':False,
-            'Reason':'Unknow optation'
+            'Reason':'Hi There!'
             }
 
     return JsonResponse(return_data)
