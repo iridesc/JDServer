@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse,HttpResponseNotAllowed,HttpResponseBadRequest#引入响应类
-import json,time
+import json,time,pytz
 from api.models import TryActivity,Shop
+from datetime import datetime 
+
 
 # Create your views here.
 
@@ -42,7 +44,9 @@ def GetTryData(data):
     #     'Reason':'GetTryData',
     #     'Days':1,
     # }
-    if TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime<time.time()-12*60*60:
+    last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
+    today_zero_time = datetime.now().replace( hour=0, minute=0, second=0,microsecond=0).timestamp()
+    if last_update_time<time.time()-12*60*60 or (time.time() > today_zero_time and last_update_time<today_zero_time):
         return_data={
             'Status':False,
             'Because':'TryDataTimeout'
