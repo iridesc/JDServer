@@ -9,6 +9,7 @@ from datetime import datetime
 
 def distributor(request):
     try:
+        print(request.body)
         data=json.loads(str(request.body))
         Reason=data['Reason']
 
