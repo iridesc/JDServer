@@ -33,7 +33,7 @@ def distributor(request):
     except:
         return_data={
             'Status':False,
-            'Reason':'Hi There!'
+            'Reason':'what you want?'
             }
 
     return JsonResponse(return_data)

@@ -4,3 +4,4 @@ api/__pycache__
 api/migrations/__pycache__
 api/migrations/
 db.sqlite3
+home/__pycache__/
