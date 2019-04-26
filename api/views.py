@@ -48,7 +48,7 @@ def GetTryData(data):
         )
         return_data={
             'Status':True,
-            'ActivityList':activity_list
+            'TryActivityList':activity_list
         }
 
     return return_data
@@ -59,7 +59,7 @@ def GetBeanData(data):
     #     'Days':None,
     # }
 
-    if data['Days'] == None:
+    if data['Days'] == 0:
         shop_list=list(Shop.objects.order_by('?')[0:50].values())
     else:
         shop_list=list(Shop.objects.filter(LastGotTime__gt=data['Days']*24*60*60).values())
