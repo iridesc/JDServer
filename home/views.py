@@ -7,4 +7,3 @@ def home(request):
     return HttpResponse('<center><h1>what are you looking for?</h1></center>')
 
 
-

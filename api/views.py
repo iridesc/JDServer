@@ -49,7 +49,7 @@ def GetTryData(data):
     if last_update_time<time.time()-12*60*60 or (time.time() > today_zero_time and last_update_time<today_zero_time):
         return_data={
             'Status':False,
-            'Because':'TryDataTimeout'
+            'Reason':'TryDataTimeout'
         }
     else:
         activity_list=list(
@@ -60,7 +60,7 @@ def GetTryData(data):
             'Status':True,
             'TryActivityList':activity_list
         }
-
+    print(return_data)
     return return_data
 
 def GetBeanData(data):

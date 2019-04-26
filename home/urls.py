@@ -3,5 +3,5 @@ from . import views #引入testapp的views
 
 
 urlpatterns = [
-    path('', views.home()),
+    path('', views.home,)
 ]
