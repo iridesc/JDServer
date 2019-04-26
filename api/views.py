@@ -9,7 +9,7 @@ from datetime import datetime
 
 def distributor(request):
     try:
-        data=json.loads(request.body)
+        data=json.loads(str(request.body))
         Reason=data['Reason']
 
         if Reason == 'GetTryData':
