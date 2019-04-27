@@ -283,6 +283,6 @@ def RemoveExistingActivityId(data):
         'Status':True,
         'ActivityIdList':new_activity_id_list
     }
-    print(len(activity_id_list),' -> ',len(new_activity_id_list),,end=' ')
+    print(len(activity_id_list),' -> ',len(new_activity_id_list),end=' ')
     print('Done .')
     return return_data
