@@ -96,7 +96,7 @@ def GetBeanData(data):
 def UpdateTryData(data):
     print('UpdateTryData',end=' ')
 
-    TryActivity.objects.all().delete()
+    #TryActivity.objects.all().delete()
 
     # data={
     #     'Reason':'UpdateTryData',
