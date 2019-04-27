@@ -247,7 +247,7 @@ def UpdateBeanData(data):
         'UpdatedRate':n/len(shop_list),
         'ErrorList':error_list,
     }
-
+    print(return_data)
     print('Done .')
     return return_data
 
