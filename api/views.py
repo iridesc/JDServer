@@ -68,14 +68,14 @@ def GetTryData(data):
             'Status':True,
             'TryActivityList':activity_list
         }
-    print(data['Days'])
-    print(datetime.now())
-    print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0))
-    print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp())
-    print(time.localtime(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()))
-    print(len(activity_list))
-    for i in activity_list:
-        print(time.localtime(i['EndTime']))
+    # print(data['Days'])
+    # print(datetime.now())
+    # print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0))
+    # print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp())
+    # print(time.localtime(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()))
+    # print(len(activity_list))
+    # for i in activity_list:
+    #     print(time.localtime(i['EndTime']))
     # print(return_data)
     print('Done .')
     return return_data
