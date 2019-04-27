@@ -58,7 +58,7 @@ def GetTryData(data):
     else:
         activity_list=list(
             TryActivity.objects.filter(EndTime__gt=time.time())\
-            .filter(EndTime__lt=time.time()+data['Days']*24*60*60).values()
+            .filter(EndTime__lt=today_zero_time+data['Days']*24*60*60).values()
         )
         return_data={
             'Status':True,
