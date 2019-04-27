@@ -282,7 +282,7 @@ def RemoveExistingActivityId(data):
 
     return_data={
         'Status':True,
-        'ActivityIdList':new_activity_id_list[0:10]
+        'ActivityIdList':new_activity_id_list
     }
     print(len(activity_id_list),' -> ',len(new_activity_id_list),end=' ')
     print('Done .')
