@@ -5,8 +5,10 @@ from django.http import HttpResponse
 
 def home(request):
     with open('./nohup.out') as f:
-        text=f.read()
-
-    return HttpResponse('<center><h1>Log is Here</h1></center><h6>{}</h6>'.format(text))
+        lines=f.readlines()
+    html=''
+    for line in lines:
+        html+='<ol>{}</ol>'.format(line)
+    return HttpResponse('<center><h1>Log is Here</h1></center><h6>{}</h6>'.format(html))
 
 
