@@ -70,6 +70,8 @@ def GetTryData(data):
         }
     print(data['Days'])
     print(len(activity_list))
+    for i in activity_list:
+        print(time.localtime(i['EndTime']))
     # print(return_data)
     print('Done .')
     return return_data
