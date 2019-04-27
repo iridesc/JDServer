@@ -94,7 +94,7 @@ def GetBeanData(data):
     return return_data
 
 def UpdateTryData(data):
-    print('UpdateTryData',,end=' ')
+    print('UpdateTryData',end=' ')
 
     TryActivity.objects.all().delete()
 
