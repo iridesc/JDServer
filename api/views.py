@@ -68,6 +68,8 @@ def GetTryData(data):
             'Status':True,
             'TryActivityList':activity_list
         }
+    print(data['Days'])
+    print(len(activity_list))
     # print(return_data)
     print('Done .')
     return return_data
