@@ -9,8 +9,7 @@ from datetime import datetime
 
 def distributor(request):
     try:
-        print(request.body)
-        data=json.loads(str(request.body))
+        data=json.loads(request.body)
         Reason=data['Reason']
 
         if Reason == 'GetTryData':
@@ -265,4 +264,5 @@ def RemoveExistingActivityId(data):
         'Status':True,
         'ActivityIdList':new_activity_id_list
     }
+    print(len(activity_id_list),'>',len(new_activity_id_list))
     return return_data
