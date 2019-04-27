@@ -49,7 +49,7 @@ def GetTryData(data):
     #     'Days':1,
     # }
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
-    today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()
+    today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
 
     # print('Data timout:',last_update_time<time.time()-12*60*60)
     # print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
