@@ -25,7 +25,9 @@ def distributor(request):
             return_data=AddBeanData(data)
         elif Reason == 'Operator':
             return_data=Operator(data)
-            
+        elif Reason == 'RemoveExistingActivityId':
+            return_data=RemoveExistingActivityId(data)
+        
         else:
             return_data={
                 'Status':False,
@@ -233,6 +235,7 @@ def UpdateBeanData(data):
     return return_data
 
 def Operator(data):
+
     # data={
     #     'Reason':'Operator'
     #     'Password':''
@@ -248,4 +251,18 @@ def Operator(data):
             'Status':False,
             'Reason':'Promission Denied！'
         }
+    return return_data
+
+def RemoveExistingActivityId(data):
+    activity_id_list=data['ActivityIdList']
+    
+    new_activity_id_list=[]
+    for activity_id in activity_id_list:
+        if not TryActivity.objects.filter(ActivityId=activity_id).exists():
+            new_activity_id_list.append(activity_id)
+
+    return_data={
+        'Status':True,
+        'ActivityIdList':new_activity_id_list
+    }
     return return_data
