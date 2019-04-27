@@ -69,6 +69,7 @@ def GetTryData(data):
             'TryActivityList':activity_list
         }
     print(data['Days'])
+    print(time.localtime(today_zero_time))
     print(len(activity_list))
     for i in activity_list:
         print(time.localtime(i['EndTime']))
