@@ -43,6 +43,7 @@ def distributor(request):
 
 
 def GetTryData(data):
+    print('GetTryData')
     # data={
     #     'Reason':'GetTryData',
     #     'Days':1,
@@ -63,10 +64,13 @@ def GetTryData(data):
             'Status':True,
             'TryActivityList':activity_list
         }
-    print(return_data)
+    # print(return_data)
+    print('Done .')
     return return_data
 
 def GetBeanData(data):
+    print('GetBeanData')
+
     # data={
     #     'Reason':'GetBeanData',
     #     'Days':None,
@@ -82,10 +86,12 @@ def GetBeanData(data):
         'ShopList':shop_list
     }
 
-    
+    print('Done .')
     return return_data
 
 def UpdateTryData(data):
+    print('UpdateTryData')
+
     TryActivity.objects.all().delete()
 
     # data={
@@ -166,11 +172,11 @@ def UpdateTryData(data):
         'SavedRate':len(ready_for_save_list)/len(try_activity_list),
         'AboutBean':bean_return,
     }
-
+    print('Done .')
     return return_data
 
 def AddBeanData(data):
-
+    print('AddBeanData')
     # data={
     #     'Reason':'AddBeanData',
     #     'ShopList':[]
@@ -201,9 +207,12 @@ def AddBeanData(data):
         'SavedRate':len(ready_for_save_list)/len(shop_list),
         
     }
+    print('Done .')
     return return_data
 
 def UpdateBeanData(data):
+
+    print('UpdateBeanData')
     # data={
     #     'Reason':'UpdateBeanData',
     #     'ShopList':[]
@@ -231,9 +240,12 @@ def UpdateBeanData(data):
         'UpdatedRate':n/len(shop_list),
         'ErrorList':error_list,
     }
+
+    print('Done .')
     return return_data
 
 def Operator(data):
+    print('Operator')
 
     # data={
     #     'Reason':'Operator'
@@ -250,9 +262,12 @@ def Operator(data):
             'Status':False,
             'Reason':'Promission Denied！'
         }
+    print('Done .')
     return return_data
 
 def RemoveExistingActivityId(data):
+    print('RemoveExistingActivityId',end='')
+
     activity_id_list=data['ActivityIdList']
     
     new_activity_id_list=[]
@@ -264,5 +279,6 @@ def RemoveExistingActivityId(data):
         'Status':True,
         'ActivityIdList':new_activity_id_list
     }
-    print(len(activity_id_list),'>',len(new_activity_id_list))
+    print(len(activity_id_list),' -> ',len(new_activity_id_list))
+    print('Done .')
     return return_data
