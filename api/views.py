@@ -176,6 +176,7 @@ def UpdateTryData(data):
         'SavedRate':len(ready_for_save_list)/len(try_activity_list),
         'AboutBean':bean_return,
     }
+    print(return_data)
     print('Done .')
     return return_data
 
