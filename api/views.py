@@ -50,7 +50,11 @@ def GetTryData(data):
     # }
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     today_zero_time = datetime.now().replace( hour=0, minute=0, second=0,microsecond=0).timestamp()
-    if last_update_time<time.time()-12*60*60 or (time.time() > today_zero_time and last_update_time<today_zero_time):
+
+    print('Data timout:',last_update_time<time.time()-12*60*60)
+    print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
+
+    if last_update_time<time.time()-12*60*60 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
             'Status':False,
             'Reason':'TryDataTimeout'
