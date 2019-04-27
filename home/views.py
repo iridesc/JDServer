@@ -8,7 +8,7 @@ def home(request):
         lines=f.readlines()
     html=''
     for line in lines:
-        html+='<ol>{}</ol>'.format(line)
-    return HttpResponse('<center><h1>Log is Here</h1></center><h6>{}</h6>'.format(html))
+        html+='<li>{}</li>'.format(line)
+    return HttpResponse('<center><h1>Log is Here</h1></center><ol>{}</ol>'.format(html))
 
 
