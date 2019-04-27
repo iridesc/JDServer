@@ -43,7 +43,7 @@ def distributor(request):
 
 
 def GetTryData(data):
-    print('GetTryData')
+    print('GetTryData',end=' ')
     # data={
     #     'Reason':'GetTryData',
     #     'Days':1,
@@ -51,8 +51,8 @@ def GetTryData(data):
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     today_zero_time = datetime.now().replace( hour=0, minute=0, second=0,microsecond=0).timestamp()
 
-    print('Data timout:',last_update_time<time.time()-12*60*60)
-    print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
+    # print('Data timout:',last_update_time<time.time()-12*60*60)
+    # print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
 
     if last_update_time<time.time()-12*60*60 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
@@ -73,7 +73,7 @@ def GetTryData(data):
     return return_data
 
 def GetBeanData(data):
-    print('GetBeanData')
+    print('GetBeanData',end=' ')
 
     # data={
     #     'Reason':'GetBeanData',
@@ -94,7 +94,7 @@ def GetBeanData(data):
     return return_data
 
 def UpdateTryData(data):
-    print('UpdateTryData')
+    print('UpdateTryData',,end=' ')
 
     TryActivity.objects.all().delete()
 
@@ -180,7 +180,7 @@ def UpdateTryData(data):
     return return_data
 
 def AddBeanData(data):
-    print('AddBeanData')
+    print('AddBeanData',end=' ')
     # data={
     #     'Reason':'AddBeanData',
     #     'ShopList':[]
@@ -216,7 +216,7 @@ def AddBeanData(data):
 
 def UpdateBeanData(data):
 
-    print('UpdateBeanData')
+    print('UpdateBeanData',end=' ')
     # data={
     #     'Reason':'UpdateBeanData',
     #     'ShopList':[]
@@ -249,7 +249,7 @@ def UpdateBeanData(data):
     return return_data
 
 def Operator(data):
-    print('Operator')
+    print('Operator',end=' ')
 
     # data={
     #     'Reason':'Operator'
@@ -270,7 +270,7 @@ def Operator(data):
     return return_data
 
 def RemoveExistingActivityId(data):
-    print('RemoveExistingActivityId',end='')
+    print('RemoveExistingActivityId',end=' ')
 
     activity_id_list=data['ActivityIdList']
     
@@ -283,6 +283,6 @@ def RemoveExistingActivityId(data):
         'Status':True,
         'ActivityIdList':new_activity_id_list
     }
-    print(len(activity_id_list),' -> ',len(new_activity_id_list))
+    print(len(activity_id_list),' -> ',len(new_activity_id_list),,end=' ')
     print('Done .')
     return return_data
