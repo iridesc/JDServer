@@ -8,6 +8,7 @@ def home(request):
         lines=f.readlines()
     if len(lines)>500:
         lines[-1,-500]
+    lines.reverse()
     html=''
     for line in lines:
         html+='<li>{}</li>'.format(line)
