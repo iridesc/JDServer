@@ -51,8 +51,8 @@ def GetTryData(data):
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     today_zero_time = datetime.now().replace( hour=0, minute=0, second=0,microsecond=0).timestamp()
 
-    print('Data timout:',last_update_time<time.time()-12*60*60)
-    print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
+    # print('Data timout:',last_update_time<time.time()-12*60*60)
+    # print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
 
     if last_update_time<time.time()-12*60*60 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
@@ -176,7 +176,7 @@ def UpdateTryData(data):
         'SavedRate':len(ready_for_save_list)/len(try_activity_list),
         'AboutBean':bean_return,
     }
-    print(return_data)
+    # print(return_data)
     print('Done .')
     return return_data
 
