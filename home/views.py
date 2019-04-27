@@ -7,6 +7,6 @@ def home(request):
     with open('./nohup.out') as f:
         text=f.read()
 
-    return HttpResponse('<center><h1>what are you looking for?</h1><h2>{}</h2></center>'.format(text))
+    return HttpResponse('<center><h1>Log is Here</h1></center><h6>{}</h6>'.format(text))
 
 
