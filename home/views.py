@@ -4,6 +4,9 @@ from django.http import HttpResponse
 
 
 def home(request):
-    return HttpResponse('<center><h1>what are you looking for?</h1></center>')
+    with open('../nohup.out') as f:
+        text=f.read()
+
+    return HttpResponse('<center><h1>what are you looking for?</h1><h2>{}</h2></center>'.format(text))
 
 
