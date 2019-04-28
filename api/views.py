@@ -26,6 +26,13 @@ def distributor(request):
             return_data=Operator(data)
         elif Reason == 'RemoveExistingActivityId':
             return_data=RemoveExistingActivityId(data)
+        elif Reason == 'GetShopsId':
+            idlist=[]
+            for shop in Shop.objects.all():
+                idlist.append(shop.ShopId)
+            return_data={
+                'ShopIdList':idlist
+            }
         
         else:
             return_data={
@@ -40,7 +47,6 @@ def distributor(request):
             }
 
     return JsonResponse(return_data)
-
 
 def GetTryData(data):
     print('GetTryData',end=' ')
@@ -204,7 +210,7 @@ def AddBeanData(data):
                 ready_for_save_list.append(
                     Shop(
                         ShopId = shop['ShopId'],
-                        ShopnName = shop['ShopName'],
+                        ShopName = shop['ShopName'],
                     )
                 )
             else:
