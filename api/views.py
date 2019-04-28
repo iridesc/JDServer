@@ -204,15 +204,17 @@ def AddBeanData(data):
     shop_list=data['ShopList']
     
     ready_for_save_list=[]
+    ready_for_save_shop_id_list=[]
     for shop in shop_list:
         if shop['ShopId']!='':
-            if not Shop.objects.filter(ShopId=shop['ShopId']).exists():
+            if (not Shop.objects.filter(ShopId=shop['ShopId']).exists()) and (shop['ShopId'] not in ready_for_save_shop_id_list):
                 ready_for_save_list.append(
                     Shop(
                         ShopId = shop['ShopId'],
                         ShopName = shop['ShopName'],
                     )
                 )
+                ready_for_save_shop_id_list.append(shop['ShopId'])
             else:
                 #print('shop exits')
                 pass
