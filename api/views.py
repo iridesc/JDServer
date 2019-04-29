@@ -50,6 +50,16 @@ def distributor(request):
 
     return JsonResponse(return_data)
 
+
+
+
+
+
+
+
+
+
+
 def GetTryData(data):
     print('GetTryData',end=' ')
    
@@ -83,30 +93,6 @@ def GetTryData(data):
     # for i in activity_list:
     #     print(time.localtime(i['EndTime']))
     # print(return_data)
-    print('Done .')
-    return return_data
-
-def GetBeanData(data):
-    print('GetBeanData',end=' ')
-    if data['Days'] == 0:
-        # 在 选择15天以内没有获得的 中 随机选取 50
-        shop_list=list(
-            Shop.objects.filter(LastGotTime__lt=time.time()-15*24*60*60)\
-                .order_by('?')[0:50]\
-                    .values()
-            )
-    else:
-        # 选择15天以内找到活动的
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)
-        .order_by('?')\
-            [0:5000]\
-                .values())
-    
-    return_data={
-        'Status':True,
-        'ShopList':shop_list
-    }
-
     print('Done .')
     return return_data
 
@@ -189,6 +175,49 @@ def UpdateTryData(data):
     print('Done .')
     return return_data
 
+def RemoveExistingActivityId(data):
+    print('RemoveExistingActivityId',end=' ')
+
+    activity_id_list=data['ActivityIdList']
+    
+    new_activity_id_list=[]
+    for activity_id in activity_id_list:
+        if not TryActivity.objects.filter(ActivityId=activity_id).exists():
+            new_activity_id_list.append(activity_id)
+
+    return_data={
+        'Status':True,
+        'ActivityIdList':new_activity_id_list
+    }
+    print(len(activity_id_list),' -> ',len(new_activity_id_list),end=' ')
+    print('Done .')
+    return return_data
+
+
+def GetBeanData(data):
+    print('GetBeanData',end=' ')
+    if data['Days'] == 0:
+        # 在 选择15天以内没有获得的 中 随机选取 50
+        shop_list=list(
+            Shop.objects.filter(LastGotTime__lt=time.time()-15*24*60*60)\
+                .order_by('?')[0:50]\
+                    .values()
+            )
+    else:
+        # 选择15天以内找到活动的
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)
+        .order_by('?')\
+            [0:5000]\
+                .values())
+    
+    return_data={
+        'Status':True,
+        'ShopList':shop_list
+    }
+
+    print('Done .')
+    return return_data
+
 def AddBeanData(data):
     print('AddBeanData',end=' ')
     # data={
@@ -260,6 +289,8 @@ def UpdateBeanData(data):
     print('Done .')
     return return_data
 
+
+
 def Operator(data):
     print('Operator',end=' ')
 
@@ -281,20 +312,3 @@ def Operator(data):
     print('Done .')
     return return_data
 
-def RemoveExistingActivityId(data):
-    print('RemoveExistingActivityId',end=' ')
-
-    activity_id_list=data['ActivityIdList']
-    
-    new_activity_id_list=[]
-    for activity_id in activity_id_list:
-        if not TryActivity.objects.filter(ActivityId=activity_id).exists():
-            new_activity_id_list.append(activity_id)
-
-    return_data={
-        'Status':True,
-        'ActivityIdList':new_activity_id_list
-    }
-    print(len(activity_id_list),' -> ',len(new_activity_id_list),end=' ')
-    print('Done .')
-    return return_data
