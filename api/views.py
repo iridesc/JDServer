@@ -61,7 +61,7 @@ def distributor(request):
 
 
 def GetTryData(data):
-    print('GetTryData',end=' ')
+    print('GetTryData',)
    
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
@@ -97,7 +97,7 @@ def GetTryData(data):
     return return_data
 
 def UpdateTryData(data):
-    print('UpdateTryData',end=' ')
+    print('UpdateTryData',)
 
     try_activity_list=[]
     unique_check=[]
@@ -150,19 +150,19 @@ def UpdateTryData(data):
                         )
                     )
                     
-                print('add')
+                # print('add')
             else:
-                print('activity exist')
+                # print('activity exist')
                 pass
         else:
-            print('activity timeout')
+            # print('activity timeout')
             pass
 
     TryActivity.objects.bulk_create(ready_for_save_list)
 
     bean_return=AddBeanData({
             'Reason':'AddBeanData',
-            'ShopList':shop_list
+            'ShopList':shop_list,
             })
     
     return_data={
@@ -176,7 +176,7 @@ def UpdateTryData(data):
     return return_data
 
 def RemoveExistingActivityId(data):
-    print('RemoveExistingActivityId',end=' ')
+    print('RemoveExistingActivityId',)
 
     activity_id_list=data['ActivityIdList']
     
@@ -189,13 +189,13 @@ def RemoveExistingActivityId(data):
         'Status':True,
         'ActivityIdList':new_activity_id_list
     }
-    print(len(activity_id_list),' -> ',len(new_activity_id_list),end=' ')
+    print(len(activity_id_list),' -> ',len(new_activity_id_list),)
     print('Done .')
     return return_data
 
 
 def GetBeanData(data):
-    print('GetBeanData',end=' ')
+    print('GetBeanData',)
     if data['Days'] == 0:
         # 在 选择15天以内没有获得的 中 随机选取 50
         shop_list=list(
@@ -219,7 +219,7 @@ def GetBeanData(data):
     return return_data
 
 def AddBeanData(data):
-    print('AddBeanData',end=' ')
+    print('AddBeanData',)
     # data={
     #     'Reason':'AddBeanData',
     #     'ShopList':[]
@@ -247,17 +247,15 @@ def AddBeanData(data):
 
     return_data={
         'Status':True,
-
         'SavedAmount':len(ready_for_save_list),
         'SavedRate':len(ready_for_save_list)/len(shop_list),
-        
     }
     print('Done .')
     return return_data
 
 def UpdateBeanData(data):
 
-    print('UpdateBeanData',end=' ')
+    print('UpdateBeanData',)
     # data={
     #     'Reason':'UpdateBeanData',
     #     'ShopList':[]
@@ -292,7 +290,7 @@ def UpdateBeanData(data):
 
 
 def Operator(data):
-    print('Operator',end=' ')
+    print('Operator',)
 
     # data={
     #     'Reason':'Operator'
