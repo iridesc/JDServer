@@ -52,53 +52,40 @@ def distributor(request):
 
 
 
-
-
-
-
-
-
-
-
 def GetTryData(data):
     print('GetTryData',)
    
+    # 获取trydata最后一次更新时间
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
+    # 当日零时的时间戳
     today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
 
-    # print('Data timout:',last_update_time<time.time()-12*60*60)
-    # print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
-
+    # 判断是否需要爬取
     if last_update_time<time.time()-12*3600 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
             'Status':False,
             'Reason':'TryDataTimeout'
         }
     else:
-        activity_list=list(
+        return_data={
+            'Status':True
+        }
+    
+    # 选出要当日要结束的活动
+    activity_list=list(
             TryActivity.objects.filter(EndTime__gt=time.time())\
                 .filter(EndTime__lt=today_zero_time+data['Days']*24*60*60)\
                     .values()
         )
-        return_data={
-            'Status':True,
-            'TryActivityList':activity_list
-        }
-    # print(data['Days'])
-    # print(datetime.now())
-    # print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0))
-    # print(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp())
-    # print(time.localtime(datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()))
-    # print(len(activity_list))
-    # for i in activity_list:
-    #     print(time.localtime(i['EndTime']))
-    # print(return_data)
+    return_data['TryActivityList']=activity_list
+   
     print('Done .')
     return return_data
 
 def UpdateTryData(data):
     print('UpdateTryData',)
 
+    # 除去重复的活动
     try_activity_list=[]
     unique_check=[]
     for activity in data['TryActivityList']:
@@ -109,7 +96,7 @@ def UpdateTryData(data):
     ready_for_save_list=[]
     shop_list=[]
     for try_activity in try_activity_list:
-
+        # 将合适的店铺加入要储存的店铺列表
         shop_list.append(
                         {
                             'ShopName':try_activity['ShopName'],
@@ -117,10 +104,11 @@ def UpdateTryData(data):
                         }
                     )
 
-                    
+        # 判断结束时间是否大于当前时间
         if try_activity['EndTime'] > time.time():
             if not TryActivity.objects.filter(ActivityId=try_activity['ActivityId']).exists():
-                # print(try_activity)
+                
+                # 将符合条件的加入准备储存列表
                 if try_activity['ShopId']=='':
                     ready_for_save_list.append(
                         TryActivity(
@@ -157,9 +145,10 @@ def UpdateTryData(data):
         else:
             # print('activity timeout')
             pass
-
+    # 存入数据库
     TryActivity.objects.bulk_create(ready_for_save_list)
 
+    # 将相关的店铺存入数据库
     bean_return=AddBeanData({
             'Reason':'AddBeanData',
             'ShopList':shop_list,
@@ -168,7 +157,7 @@ def UpdateTryData(data):
     return_data={
         'Status':True,
         'SavedAmount':len(ready_for_save_list),
-        'SavedRate':len(ready_for_save_list)/len(try_activity_list),
+        'SavedRate':len(try_activity_list),
         'AboutBean':bean_return,
     }
     print(return_data)
@@ -220,11 +209,6 @@ def GetBeanData(data):
 
 def AddBeanData(data):
     print('AddBeanData',)
-    # data={
-    #     'Reason':'AddBeanData',
-    #     'ShopList':[]
-    # }
-    
     shop_list=data['ShopList']
     
     ready_for_save_list=[]
@@ -248,18 +232,14 @@ def AddBeanData(data):
     return_data={
         'Status':True,
         'SavedAmount':len(ready_for_save_list),
-        'SavedRate':len(ready_for_save_list)/len(shop_list),
+        'SavedRate':len(shop_list),
     }
     print('Done .')
     return return_data
 
 def UpdateBeanData(data):
-
     print('UpdateBeanData',)
-    # data={
-    #     'Reason':'UpdateBeanData',
-    #     'ShopList':[]
-    # }
+
     shop_list=data['ShopList']
     
     n=0
@@ -280,7 +260,7 @@ def UpdateBeanData(data):
     return_data={
         'Status':True,
         'UpdatedAmount':n,
-        'UpdatedRate':n/len(shop_list),
+        'TotalRate':len(shop_list),
         'ErrorList':error_list,
     }
     print(return_data)
