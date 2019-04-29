@@ -52,10 +52,7 @@ def distributor(request):
 
 def GetTryData(data):
     print('GetTryData',end=' ')
-    # data={
-    #     'Reason':'GetTryData',
-    #     'Days':1,
-    # }
+   
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
 
@@ -116,19 +113,11 @@ def GetBeanData(data):
 def UpdateTryData(data):
     print('UpdateTryData',end=' ')
 
-    #TryActivity.objects.all().delete()
-
-    # data={
-    #     'Reason':'UpdateTryData',
-    #     'TryActivityList':[]
-    # }
-
-
     try_activity_list=[]
-    for_unique=[]
+    unique_check=[]
     for activity in data['TryActivityList']:
-        if activity['ActivityId'] not in for_unique:
-            for_unique.append(activity['ActivityId'])
+        if activity['ActivityId'] not in unique_check:
+            unique_check.append(activity['ActivityId'])
             try_activity_list.append(activity)
 
     ready_for_save_list=[]
@@ -175,12 +164,12 @@ def UpdateTryData(data):
                         )
                     )
                     
-                # print('add')
+                print('add')
             else:
-                # print('activity exist')
+                print('activity exist')
                 pass
         else:
-            #print('activity timeout')
+            print('activity timeout')
             pass
 
     TryActivity.objects.bulk_create(ready_for_save_list)
@@ -196,7 +185,7 @@ def UpdateTryData(data):
         'SavedRate':len(ready_for_save_list)/len(try_activity_list),
         'AboutBean':bean_return,
     }
-    # print(return_data)
+    print(return_data)
     print('Done .')
     return return_data
 
