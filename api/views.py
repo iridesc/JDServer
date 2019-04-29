@@ -60,7 +60,7 @@ def GetTryData(data):
     # print('Data timout:',last_update_time<time.time()-12*60*60)
     # print('time cross zerotime:',((time.time() > today_zero_time) and (last_update_time<today_zero_time)))
 
-    if last_update_time<time.time()-12*60*60 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
+    if last_update_time<time.time()-12*3600 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
             'Status':False,
             'Reason':'TryDataTimeout'
@@ -68,7 +68,8 @@ def GetTryData(data):
     else:
         activity_list=list(
             TryActivity.objects.filter(EndTime__gt=time.time())\
-            .filter(EndTime__lt=today_zero_time+data['Days']*24*60*60).values()
+                .filter(EndTime__lt=today_zero_time+data['Days']*24*60*60)\
+                    .values()
         )
         return_data={
             'Status':True,
@@ -94,10 +95,18 @@ def GetBeanData(data):
     #     'Days':None,
     # }
 
+
+    
     if data['Days'] == 0:
-        shop_list=list(Shop.objects.order_by('?')[0:50].values())
+        # 在 选择15天以内没有获得的 中 随机选取 50
+        shop_list=list(
+            Shop.objects.filter(LastGotTime__lt=time.time()-15*24*60*60)\
+                .order_by('?')[0:50]\
+                    .values()
+            )
     else:
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=data['Days']*24*60*60).values())
+        # 选择15天以内找到活动的
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60).values())
     
     return_data={
         'Status':True,
