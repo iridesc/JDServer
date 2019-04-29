@@ -11,7 +11,9 @@ def distributor(request):
     try:
         data=json.loads(request.body)
         Reason=data['Reason']
-
+        print('Shop Amount:',Shop.objects.all().count(),)
+        print('TryActivity Amount:',TryActivity.objects.all().count(),)
+        
         if Reason == 'GetTryData':
             return_data=GetTryData(data)
         elif Reason == 'GetBeanData':
@@ -98,7 +100,10 @@ def GetBeanData(data):
             )
     else:
         # 选择15天以内找到活动的
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)[0:5000].values())
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)
+        .order_by('?')\
+            [0:5000]\
+                .values())
     
     return_data={
         'Status':True,
