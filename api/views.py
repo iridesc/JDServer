@@ -89,14 +89,6 @@ def GetTryData(data):
 
 def GetBeanData(data):
     print('GetBeanData',end=' ')
-
-    # data={
-    #     'Reason':'GetBeanData',
-    #     'Days':None,
-    # }
-
-
-    
     if data['Days'] == 0:
         # 在 选择15天以内没有获得的 中 随机选取 50
         shop_list=list(
@@ -106,7 +98,7 @@ def GetBeanData(data):
             )
     else:
         # 选择15天以内找到活动的
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60).values())
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)[0:5000].values())
     
     return_data={
         'Status':True,
