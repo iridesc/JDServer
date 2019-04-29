@@ -8,7 +8,7 @@ def home(request):
         lines=f.readlines()
     lines.reverse()
     if len(lines)>500:
-        lines=lines[1,500]
+        lines=lines[1:500]
    
     html=''
     for line in lines:
