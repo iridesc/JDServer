@@ -7,6 +7,18 @@ from datetime import datetime
 
 # Create your views here.
 
+# 
+RandomGetShopDaysLimit = 1
+#
+ShopEachRetuenAmount = 100
+#
+MaxRecentGotShopAmount=5000
+
+
+
+
+
+
 def distributor(request):
     try:
         data=json.loads(request.body)
@@ -74,7 +86,7 @@ def GetTryData(data):
     # 选出要当日要结束的活动
     activity_list=list(
             TryActivity.objects.filter(EndTime__gt=time.time())\
-                .filter(EndTime__lt=today_zero_time+data['Days']*24*60*60)\
+                .filter(EndTime__lt=today_zero_time+data['Days']*24*3600)\
                     .values()
         )
     return_data['TryActivityList']=activity_list
@@ -188,15 +200,15 @@ def GetBeanData(data):
     if data['Days'] == 0:
         # 在 选择15天以内没有获得的 中 随机选取 50
         shop_list=list(
-            Shop.objects.filter(LastGotTime__lt=time.time()-15*24*60*60)\
-                .order_by('?')[0:50]\
+            Shop.objects.filter(LastGotTime__lt=time.time()-RandomGetShopDaysLimit*24*3600)\
+                .order_by('?')[0:ShopEachRetuenAmount]\
                     .values()
             )
     else:
         # 选择15天以内找到活动的
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*60*60)
+        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*3600)
         .order_by('?')\
-            [0:5000]\
+            [0:MaxRecentGotShopAmount]\
                 .values())
     
     return_data={
