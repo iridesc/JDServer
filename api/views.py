@@ -64,7 +64,6 @@ def distributor(request):
 
 
 def GetTryData(data):
-    print('GetTryData')
     # 删除过期的
     timeout_activity=TryActivity.objects.filter(EndTime__lt=time.time())
     print('delete:',timeout_activity.count())
@@ -98,8 +97,6 @@ def GetTryData(data):
     return return_data
 
 def UpdateTryData(data):
-    print('UpdateTryData',)
-
     # 除去重复的活动
     try_activity_list=[]
     unique_check=[]
@@ -180,8 +177,6 @@ def UpdateTryData(data):
     return return_data
 
 def RemoveExistingActivityId(data):
-    print('RemoveExistingActivityId',)
-
     activity_id_list=data['ActivityIdList']
     
     new_activity_id_list=[]
@@ -198,7 +193,6 @@ def RemoveExistingActivityId(data):
 
 
 def GetBeanData(data):
-    print('GetBeanData',)
     if data['Days'] == 0:
         # 在 选择15天以内没有获得的 中 随机选取 50
         shop_list=list(
@@ -221,7 +215,6 @@ def GetBeanData(data):
     return return_data
 
 def AddBeanData(data):
-    print('AddBeanData',)
     shop_list=data['ShopList']
     
     ready_for_save_list=[]
@@ -251,8 +244,6 @@ def AddBeanData(data):
     return return_data
 
 def UpdateBeanData(data):
-    print('UpdateBeanData',)
-
     shop_list=data['ShopList']
     
     n=0
@@ -283,8 +274,6 @@ def UpdateBeanData(data):
 
 
 def Operator(data):
-    print('Operator',)
-
     # data={
     #     'Reason':'Operator'
     #     'Password':''
