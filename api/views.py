@@ -7,15 +7,12 @@ from datetime import datetime
 
 # Create your views here.
 
-# 
+# 随机检查模式时 选取RandomGetShopDaysLimit天前的店铺检查
 RandomGetShopDaysLimit = 1
-#
+# 随机检查模式每次返回的店铺数量
 ShopEachRetuenAmount = 100
-#
+# 最大获取最近活跃的店铺数量
 MaxRecentGotShopAmount=5000
-
-
-
 
 
 
@@ -66,7 +63,11 @@ def distributor(request):
 
 def GetTryData(data):
     print('GetTryData',)
-   
+    # 删除过期的
+    timeout_activity=TryActivity.objects.filter(EndTime__lt=time.time())
+    print('delete:',timeout_activity.count())
+    timeout_activity.delete()
+
     # 获取trydata最后一次更新时间
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
     # 当日零时的时间戳
