@@ -20,6 +20,7 @@ def distributor(request):
     try:
         data=json.loads(request.body)
         Reason=data['Reason']
+        print('\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-')
         print('Shop Amount:',Shop.objects.all().count(),)
         print('TryActivity Amount:',TryActivity.objects.all().count(),)
         
@@ -62,7 +63,7 @@ def distributor(request):
 
 
 def GetTryData(data):
-    print('GetTryData',)
+    print('GetTryData')
     # 删除过期的
     timeout_activity=TryActivity.objects.filter(EndTime__lt=time.time())
     print('delete:',timeout_activity.count())
@@ -70,6 +71,7 @@ def GetTryData(data):
 
     # 获取trydata最后一次更新时间
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
+   
     # 当日零时的时间戳
     today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
 
@@ -91,7 +93,7 @@ def GetTryData(data):
                     .values()
         )
     return_data['TryActivityList']=activity_list
-   
+    print('return activity amount:',len(activity_list))
     print('Done .')
     return return_data
 
