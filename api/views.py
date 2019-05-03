@@ -19,11 +19,11 @@ MaxRecentGotShopAmount=5000
 def distributor(request):
     try:
         data=json.loads(request.body)
-        Reason=data['Reason']
         print('\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-')
+        Reason=data['Reason']
         print('Shop Amount:',Shop.objects.all().count(),)
         print('TryActivity Amount:',TryActivity.objects.all().count(),)
-        
+        print(Reason)
         if Reason == 'GetTryData':
             return_data=GetTryData(data)
         elif Reason == 'GetBeanData':
@@ -51,6 +51,7 @@ def distributor(request):
                 'Status':False,
                 'Reason':'Unknow optation'
                 }
+        print('Done .')
     except Exception as e:
         print(str(e))
         return_data={
@@ -94,7 +95,6 @@ def GetTryData(data):
         )
     return_data['TryActivityList']=activity_list
     print('return activity amount:',len(activity_list))
-    print('Done .')
     return return_data
 
 def UpdateTryData(data):
@@ -176,7 +176,7 @@ def UpdateTryData(data):
         'AboutBean':bean_return,
     }
     print(return_data)
-    print('Done .')
+    
     return return_data
 
 def RemoveExistingActivityId(data):
@@ -194,7 +194,6 @@ def RemoveExistingActivityId(data):
         'ActivityIdList':new_activity_id_list
     }
     print(len(activity_id_list),' -> ',len(new_activity_id_list),)
-    print('Done .')
     return return_data
 
 
@@ -219,7 +218,6 @@ def GetBeanData(data):
         'ShopList':shop_list
     }
 
-    print('Done .')
     return return_data
 
 def AddBeanData(data):
@@ -249,7 +247,7 @@ def AddBeanData(data):
         'SavedAmount':len(ready_for_save_list),
         'SavedRate':len(shop_list),
     }
-    print('Done .')
+
     return return_data
 
 def UpdateBeanData(data):
@@ -279,7 +277,7 @@ def UpdateBeanData(data):
         'ErrorList':error_list,
     }
     print(return_data)
-    print('Done .')
+
     return return_data
 
 
@@ -302,6 +300,5 @@ def Operator(data):
             'Status':False,
             'Reason':'Promission Denied！'
         }
-    print('Done .')
     return return_data
 
