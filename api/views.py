@@ -73,10 +73,10 @@ def GetTryData(data):
     last_update_time = TryActivity.objects.order_by('-UpdateTime')[0].UpdateTime
    
     # 当日零时的时间戳
-    today_zero_time = datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).timestamp()+8*3600
+    today_zero_time = datetime.now().replace(hour=8, minute=0, second=0,microsecond=0).timestamp()
 
     # 判断是否需要爬取
-    if last_update_time<time.time()-12*3600 or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
+    if (last_update_time<time.time()-12*3600) or ((time.time() > today_zero_time) and (last_update_time<today_zero_time)):
         return_data={
             'Status':False,
             'Reason':'TryDataTimeout'
@@ -100,63 +100,64 @@ def UpdateTryData(data):
     # 除去重复的活动
     try_activity_list=[]
     unique_check=[]
+    ready_for_save_list=[]
+    shop_list=[]
+   
     for activity in data['TryActivityList']:
         if activity['ActivityId'] not in unique_check:
             unique_check.append(activity['ActivityId'])
-            try_activity_list.append(activity)
-
-    ready_for_save_list=[]
-    shop_list=[]
-    for try_activity in try_activity_list:
-        # 将合适的店铺加入要储存的店铺列表
-        shop_list.append(
-                        {
-                            'ShopName':try_activity['ShopName'],
-                            'ShopId':try_activity['ShopId'],
-                        }
-                    )
-
-        # 判断结束时间是否大于当前时间
-        if try_activity['EndTime'] > time.time():
-            if not TryActivity.objects.filter(ActivityId=try_activity['ActivityId']).exists():
-                
-                # 将符合条件的加入准备储存列表
-                if try_activity['ShopId']=='':
-                    ready_for_save_list.append(
-                        TryActivity(
-                            ActivityId=try_activity['ActivityId'],
-                            TrialSkuId=try_activity['TrialSkuId'],
-                            StartTime=try_activity['StartTime'],
-                            EndTime=try_activity['EndTime'],
-                            SupplyCount=try_activity['SupplyCount'],
-                            TrialName=try_activity['TrialName'],
-                            Price=try_activity['Price'],
+            # 将合适的店铺加入要储存的店铺列表
+            shop_list.append(
+                            {
+                                'ShopName':activity['ShopName'],
+                                'ShopId':activity['ShopId'],
+                            }
                         )
-                    )
 
+            # 判断结束时间是否大于当前时间
+            if activity['EndTime'] > time.time():
+                if not TryActivity.objects.filter(ActivityId=activity['ActivityId']).exists():
+                    
+                    # 将符合条件的加入准备储存列表
+                    if activity['ShopId']=='':
+                        ready_for_save_list.append(
+                            TryActivity(
+                                ActivityId=activity['ActivityId'],
+                                TrialSkuId=activity['TrialSkuId'],
+                                StartTime=activity['StartTime'],
+                                EndTime=activity['EndTime'],
+                                SupplyCount=activity['SupplyCount'],
+                                TrialName=activity['TrialName'],
+                                Price=activity['Price'],
+                            )
+                        )
+
+                    else:
+                        
+                        ready_for_save_list.append(
+                            TryActivity(
+                                ActivityId=activity['ActivityId'],
+                                TrialSkuId=activity['TrialSkuId'],
+                                StartTime=activity['StartTime'],
+                                EndTime=activity['EndTime'],
+                                SupplyCount=activity['SupplyCount'],
+                                TrialName=activity['TrialName'],
+                                ShopName=activity['ShopName'],
+                                ShopId=activity['ShopId'],
+                                Price=activity['Price'],
+                            )
+                        )
+                        
+                    # print('add')
                 else:
-                    
-                    ready_for_save_list.append(
-                        TryActivity(
-                            ActivityId=try_activity['ActivityId'],
-                            TrialSkuId=try_activity['TrialSkuId'],
-                            StartTime=try_activity['StartTime'],
-                            EndTime=try_activity['EndTime'],
-                            SupplyCount=try_activity['SupplyCount'],
-                            TrialName=try_activity['TrialName'],
-                            ShopName=try_activity['ShopName'],
-                            ShopId=try_activity['ShopId'],
-                            Price=try_activity['Price'],
-                        )
-                    )
-                    
-                # print('add')
+                    # print('activity exist')
+                    pass
             else:
-                # print('activity exist')
+                # print('activity timeout')
                 pass
-        else:
-            # print('activity timeout')
-            pass
+
+   
+        
     # 存入数据库
     TryActivity.objects.bulk_create(ready_for_save_list)
 
@@ -165,7 +166,7 @@ def UpdateTryData(data):
             'Reason':'AddBeanData',
             'ShopList':shop_list,
             })
-    
+    # 返回数据
     return_data={
         'Status':True,
         'SavedAmount':len(ready_for_save_list),
