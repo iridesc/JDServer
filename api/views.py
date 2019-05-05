@@ -7,12 +7,12 @@ from datetime import datetime
 
 # Create your views here.
 
-# 随机检查模式时 选取RandomGetShopDaysLimit天前的店铺检查
-RandomGetShopDaysLimit = 1
+# 店铺优惠检查间隔时间（天）
+ShopCheckGap = 7
 # 随机检查模式每次返回的店铺数量
-ShopEachRetuenAmount = 100
+MaxRandomCheckShopAmount = 100
 # 最大获取最近活跃的店铺数量
-MaxRecentGotShopAmount=5000
+MaxRecentGotShopAmount = 3000
 
 
 
@@ -61,8 +61,6 @@ def distributor(request):
 
     return JsonResponse(return_data)
 
-
-
 def GetTryData(data):
     # 删除过期的
     timeout_activity=TryActivity.objects.filter(EndTime__lt=time.time())
@@ -97,80 +95,50 @@ def GetTryData(data):
     return return_data
 
 def UpdateTryData(data):
-    # 除去重复的活动
-    try_activity_list=[]
-    unique_check=[]
-    ready_for_save_list=[]
+
     shop_list=[]
-   
+
+    n=0
     for activity in data['TryActivityList']:
-        if activity['ActivityId'] not in unique_check:
-            unique_check.append(activity['ActivityId'])
-            # 将合适的店铺加入要储存的店铺列表
-            shop_list.append(
-                            {
-                                'ShopName':activity['ShopName'],
-                                'ShopId':activity['ShopId'],
-                            }
-                        )
+    
+        # 将合适的店铺加入要储存的店铺列表
+        shop_list.append(
+                        {
+                            'ShopName':activity['ShopName'],
+                            'ShopId':activity['ShopId'],
+                        }
+                    )
 
-            # 判断结束时间是否大于当前时间
-            if activity['EndTime'] > time.time():
-                if not TryActivity.objects.filter(ActivityId=activity['ActivityId']).exists():
-                    
-                    # 将符合条件的加入准备储存列表
-                    if activity['ShopId']=='':
-                        ready_for_save_list.append(
-                            TryActivity(
-                                ActivityId=activity['ActivityId'],
-                                TrialSkuId=activity['TrialSkuId'],
-                                StartTime=activity['StartTime'],
-                                EndTime=activity['EndTime'],
-                                SupplyCount=activity['SupplyCount'],
-                                TrialName=activity['TrialName'],
-                                Price=activity['Price'],
-                            )
-                        )
+        # 更新活动或者创建活动    
+        t,created=TryActivity.objects.update_or_create(
+            ActivityId=activity['ActivityId'],
+            TrialSkuId=activity['TrialSkuId'],
+            StartTime=activity['StartTime'],
+            EndTime=activity['EndTime'],
+            SupplyCount=activity['SupplyCount'],
+            TrialName=activity['TrialName'],
+            ShopName=activity['ShopName'],
+            ShopId=activity['ShopId'],
+            Price=activity['Price'],
+            )
+        if created:
+            n+=1
 
-                    else:
-                        
-                        ready_for_save_list.append(
-                            TryActivity(
-                                ActivityId=activity['ActivityId'],
-                                TrialSkuId=activity['TrialSkuId'],
-                                StartTime=activity['StartTime'],
-                                EndTime=activity['EndTime'],
-                                SupplyCount=activity['SupplyCount'],
-                                TrialName=activity['TrialName'],
-                                ShopName=activity['ShopName'],
-                                ShopId=activity['ShopId'],
-                                Price=activity['Price'],
-                            )
-                        )
-                        
-                    # print('add')
-                else:
-                    # print('activity exist')
-                    pass
-            else:
-                # print('activity timeout')
-                pass
-
-   
         
-    # 存入数据库
-    TryActivity.objects.bulk_create(ready_for_save_list)
+
+  
 
     # 将相关的店铺存入数据库
     bean_return=AddBeanData({
             'Reason':'AddBeanData',
             'ShopList':shop_list,
             })
+
     # 返回数据
     return_data={
         'Status':True,
-        'SavedAmount':len(ready_for_save_list),
-        'SavedRate':len(try_activity_list),
+        'SavedAmount':n,
+        'AllAmount':len(data['TryActivityList']),
         'AboutBean':bean_return,
     }
     print(return_data)
@@ -187,7 +155,7 @@ def RemoveExistingActivityId(data):
 
     return_data={
         'Status':True,
-        'ActivityIdList':new_activity_id_list
+        'ActivityIdList':new_activity_id_list[0:50]
     }
     print(len(activity_id_list),' -> ',len(new_activity_id_list),)
     return return_data
@@ -196,18 +164,27 @@ def RemoveExistingActivityId(data):
 def GetBeanData(data):
     if data['Days'] == 0:
         # 在 选择15天以内没有获得的 中 随机选取 50
-        shop_list=list(
-            Shop.objects.filter(LastGotTime__lt=time.time()-RandomGetShopDaysLimit*24*3600)\
-                .order_by('?')[0:ShopEachRetuenAmount]\
-                    .values()
-            )
+        shop_for_check_set = Shop.objects.filter(
+            LastCheckTime__lt=time.time()-ShopCheckGap*24*3600
+            ).order_by('?')[0:MaxRandomCheckShopAmount]
+                
     else:
-        # 选择15天以内找到活动的
-        shop_list=list(Shop.objects.filter(LastGotTime__gt=time.time()-data['Days']*24*3600)
-        .order_by('?')\
-            [0:MaxRecentGotShopAmount]\
-                .values())
-    
+        # 选择请求天数以内找优惠活动的店铺
+        shop_for_check_set = Shop.objects.filter(
+            LastGotTime__gt=time.time()-data['Days']*24*3600
+            ).order_by('?')[0:MaxRecentGotShopAmount]
+
+    # 获取shop_list
+    shop_list=list(
+                    shop_for_check_set.values()
+                )
+  
+    # 更新最后一次检查时间
+    LastCheckTime=time.time()
+    for shop in shop_for_check_set:
+        shop.LastCheckTime=LastCheckTime
+    Shop.objects.bulk_update(shop_for_check_set,['LastCheckTime'])
+
     return_data={
         'Status':True,
         'ShopList':shop_list
@@ -217,57 +194,41 @@ def GetBeanData(data):
 
 def AddBeanData(data):
     shop_list=data['ShopList']
-    
-    ready_for_save_list=[]
-    ready_for_save_shop_id_list=[]
+    n=0
     for shop in shop_list:
-        if shop['ShopId']!='':
-            if (not Shop.objects.filter(ShopId=shop['ShopId']).exists()) and (shop['ShopId'] not in ready_for_save_shop_id_list):
-                ready_for_save_list.append(
-                    Shop(
-                        ShopId = shop['ShopId'],
-                        ShopName = shop['ShopName'],
-                    )
-                )
-                ready_for_save_shop_id_list.append(shop['ShopId'])
-            else:
-                #print('shop exits')
-                pass
-    
-    Shop.objects.bulk_create(ready_for_save_list)
+        s,created=Shop.objects.update_or_create(ShopId=shop['ShopId'],ShopName = shop['ShopName'])
+        if created:
+            n+=1
 
     return_data={
         'Status':True,
-        'SavedAmount':len(ready_for_save_list),
-        'SavedRate':len(shop_list),
+        'SavedAmount':n,
     }
-
+    print(return_data)
     return return_data
 
 def UpdateBeanData(data):
-    shop_list=data['ShopList']
+    shop_list=data['ShopIdList']
     
     n=0
-    error_list=[]
-    for shop in shop_list:
-        if shop['ShopId']!='':
-            try:
-                s=Shop.objects.get(ShopId=shop['ShopId'])
-                if s.LastGotTime < shop['LastGotTime']:
-                    s.LastGotTime=shop['LastGotTime']
-                    s.save()
-                    n+=1
-            except Exception as e:
-                # print(str(e))
-                error_list.append(str(e))  
-        else:
-            error_list.append('ShopId is Blank')  
+    LastGotTime=time.time()
+    ready_for_save_list=[]
+    for shop_id in shop_list:
+        try:
+            s=Shop.objects.get(ShopId=shop_id) 
+            s.LastGotTime=LastGotTime         
+            ready_for_save_list.append(s)
+            n+=1
+        except Exception as e:
+                print(str(e))
+    Shop.objects.bulk_update(ready_for_save_list,['LastGotTime'])
+
     return_data={
         'Status':True,
         'UpdatedAmount':n,
-        'TotalRate':len(shop_list),
-        'ErrorList':error_list,
+        'AllAmount':len(shop_list),
     }
+
     print(return_data)
 
     return return_data

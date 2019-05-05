@@ -20,7 +20,8 @@ class TryActivity(models.Model):
 class Shop(models.Model):
     ShopId = models.IntegerField(primary_key=True,db_index=True,)
     ShopName = models.CharField(max_length=50)
-    LastGotTime = models.FloatField(default=time.time())
+    LastGotTime = models.FloatField(default=0)
+    LastCheckTime = models.FloatField(default=0)
  
 
     
