@@ -182,7 +182,9 @@ def GetBeanData(data):
     # 更新最后一次检查时间
     LastCheckTime=time.time()
     for shop in shop_for_check_set:
+        print('-----------------------------------------------------------------------')
         shop.LastCheckTime=LastCheckTime
+        shop.save()
     Shop.objects.bulk_update(shop_for_check_set,['LastCheckTime'])
 
     return_data={
