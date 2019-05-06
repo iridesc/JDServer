@@ -10,7 +10,7 @@ from datetime import datetime
 # 店铺优惠检查间隔时间（天）
 ShopCheckGap = 7
 # 随机检查模式每次返回的店铺数量
-MaxRandomCheckShopAmount = 100
+RandomCheckShopAmount = 100
 # 最大获取最近活跃的店铺数量
 MaxRecentGotShopAmount = 3000
 
@@ -163,11 +163,18 @@ def RemoveExistingActivityId(data):
 
 def GetBeanData(data):
     if data['Days'] == 0:
-        # 在 选择15天以内没有获得的 中 随机选取 50
+        # 在ShopCheckGap天以内没有优惠的店铺中随机选取一部分返回
         shop_for_check_set = Shop.objects.filter(
             LastCheckTime__lt=time.time()-ShopCheckGap*24*3600
-            ).order_by('?')[0:MaxRandomCheckShopAmount]
-                
+            ).order_by('?')[0:RandomCheckShopAmount]
+
+        # 更新最后一次检查时间
+        LastCheckTime=time.time()
+        for shop in shop_for_check_set:
+            shop.LastCheckTime=LastCheckTime
+
+        Shop.objects.bulk_update(shop_for_check_set,['LastCheckTime'])
+
     else:
         # 选择请求天数以内找优惠活动的店铺
         shop_for_check_set = Shop.objects.filter(
@@ -179,14 +186,6 @@ def GetBeanData(data):
                     shop_for_check_set.values()
                 )
   
-    # 更新最后一次检查时间
-    LastCheckTime=time.time()
-    for shop in shop_for_check_set:
-
-        shop.LastCheckTime=LastCheckTime
-
-    Shop.objects.bulk_update(shop_for_check_set,['LastCheckTime'])
-
     return_data={
         'Status':True,
         'ShopList':shop_list
