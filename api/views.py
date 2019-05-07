@@ -8,9 +8,9 @@ from datetime import datetime
 # Create your views here.
 
 # 店铺优惠检查间隔时间（天）
-ShopCheckGap = 7
+ShopCheckGap = 15
 # 随机检查模式每次返回的店铺数量
-RandomCheckShopAmount = 100
+RandomCheckShopAmount = 50
 # 最大获取最近活跃的店铺数量
 MaxRecentGotShopAmount = 3000
 
