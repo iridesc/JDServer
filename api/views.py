@@ -197,9 +197,12 @@ def AddBeanData(data):
     shop_list=data['ShopList']
     n=0
     for shop in shop_list:
-        s,created=Shop.objects.update_or_create(ShopId=shop['ShopId'],ShopName = shop['ShopName'])
-        if created:
-            n+=1
+        try:
+            s,created=Shop.objects.update_or_create(ShopId=shop['ShopId'],ShopName = shop['ShopName'])
+            if created:
+                n+=1
+        except Exception as e:
+            print(e)
 
     return_data={
         'Status':True,
@@ -222,6 +225,7 @@ def UpdateBeanData(data):
             n+=1
         except Exception as e:
                 print(str(e))
+    
     Shop.objects.bulk_update(ready_for_save_list,['LastGotTime'])
 
     return_data={
