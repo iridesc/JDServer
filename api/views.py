@@ -17,7 +17,7 @@ MaxRecentGotShopAmount = 3000
 
 
 def distributor(request):
-    try:
+    # try:
         data=json.loads(request.body)
         print('\n-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-')
         Reason=data['Reason']
@@ -52,14 +52,14 @@ def distributor(request):
                 'Reason':'Unknow optation'
                 }
         print('Done .')
-    except Exception as e:
+    # except Exception as e:
         print(str(e))
         return_data={
             'Status':False,
             'Reason':'what you want?'
             }
 
-    return JsonResponse(return_data)
+        return JsonResponse(return_data)
 
 def GetTryData(data):
     # 删除过期的
