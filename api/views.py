@@ -53,7 +53,7 @@ def distributor(request):
                 }
         print('Done .')
     # except Exception as e:
-        print(str(e))
+        # print(str(e))
         return_data={
             'Status':False,
             'Reason':'what you want?'
